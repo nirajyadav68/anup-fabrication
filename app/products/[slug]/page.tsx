@@ -3,21 +3,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ImageOff } from "lucide-react";
-import { getPublishedProductBySlug, getPublishedProducts } from "@/lib/data/products";
+import { getPublishedProductBySlug } from "@/lib/data/products";
 import { mediaUrl } from "@/lib/supabase/storage";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ProductAvailability from "@/components/ProductAvailability";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: { slug: string };
 }
 
-export async function generateStaticParams() {
-  const products = await getPublishedProducts();
-  return products.map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getPublishedProductBySlug(params.slug);
