@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-steel-50 text-navy-900 antialiased;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+    font-weight: 700;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    @apply outline-none ring-2 ring-signal-500 ring-offset-2 ring-offset-steel-50;
+  }
+}
+
+@layer utilities {
+  /* The site's signature motif: a single angled "cut steel plate" edge,
+     used once per page (hero) rather than scattered everywhere. */
+  .cut-edge-bottom {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 92%);
+  }
+  .cut-edge-top {
+    clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
