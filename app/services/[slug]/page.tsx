@@ -2,20 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getPublishedServiceBySlug, getPublishedServices } from "@/lib/data/services";
+import { getPublishedServiceBySlug } from "@/lib/data/services";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { siteConfig } from "@/lib/site-config";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: { slug: string };
 }
 
-export async function generateStaticParams() {
-  const services = await getPublishedServices();
-  return services.map((service) => ({ slug: service.slug }));
-}
+
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getPublishedServiceBySlug(params.slug);
