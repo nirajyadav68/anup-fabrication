@@ -14,8 +14,8 @@ export const siteConfig = {
   description:
     "Quality MS & SS fabrication, gates, railings, doors, windows and custom metal work — built to spec, delivered on time.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.anupfabrication.in",
-  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+919999999999",
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+919999999999",
+  phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+917256942814",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+917256942814",
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rajuyadavchinchoti@123gmail.com",
   address: "Naigaon, 9WM2+R37, Chinchoti Rd, Chinchoti, East, Vasai-Virar, Maharashtra 421302, India",
   businessHours: "Mon – Sat: 9:00 AM – 9:00 PM",
