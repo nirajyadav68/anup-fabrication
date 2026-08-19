@@ -30,10 +30,11 @@ export default function LoginForm() {
 
     setLoading(false);
 
-    if (signInError) {
-      setError("Incorrect email or password. Please try again.");
-      return;
-    }
+ if (signInError) {
+  console.error("Login error:", signInError);
+  setError(`Login error: ${signInError.message}`);
+  return;
+}
 
     router.push(redirectTo);
     router.refresh();
@@ -51,10 +52,11 @@ export default function LoginForm() {
 
     setLoading(false);
 
-    if (resetError) {
-      setError("Couldn't send reset email. Please check the address and try again.");
-      return;
-    }
+   if (resetError) {
+  console.error("Password reset error:", resetError);
+  setError(`Reset error: ${resetError.message}`);
+  return;
+}
 
     setResetSent(true);
   }
