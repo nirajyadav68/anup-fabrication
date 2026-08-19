@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import Chatbot from "@/components/chat/Chatbot";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -52,6 +53,8 @@ export default function RootLayout({
           floating
           message={`Hello, I'd like to know more about ${siteConfig.shortName}'s services.`}
         />
+
+        <Chatbot />
       </body>
     </html>
   );
