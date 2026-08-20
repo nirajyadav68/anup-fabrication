@@ -13,7 +13,7 @@ export const siteConfig = {
   tagline: "Precision Fabrication. Built to Last.",
   description:
     "Quality MS & SS fabrication, gates, railings, doors, windows and custom metal work — built to spec, delivered on time.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.anupfabrication.in",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://anup-fabrication.vercel.app",
   phone: process.env.NEXT_PUBLIC_PHONE_NUMBER ?? "+917256942814",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+917256942814",
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "rajuyadavchinchoti@123gmail.com",
