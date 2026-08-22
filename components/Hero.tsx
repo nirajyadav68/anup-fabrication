@@ -37,7 +37,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-steel-200 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-white drop-shadow-lg sm:text-lg">
             {siteConfig.description}
           </p>
 
