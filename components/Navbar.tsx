@@ -17,6 +17,7 @@ export default function Navbar() {
         aria-label="Primary"
         className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
       >
+        {/* Logo */}
         <Link
           href="/"
           className="font-display text-xl font-bold tracking-tight text-white"
@@ -29,6 +30,7 @@ export default function Navbar() {
         <ul className="hidden items-center gap-7 md:flex">
           {primaryNavLinks.map((link) => {
             const isActive = pathname === link.href;
+
             return (
               <li key={link.href}>
                 <Link
@@ -55,6 +57,16 @@ export default function Navbar() {
             <Phone className="h-4 w-4" aria-hidden="true" />
             {siteConfig.phone}
           </a>
+
+          {/* Track Quote */}
+          <Link
+            href="/track-quote"
+            className="rounded-md border border-steel-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-navy-800"
+          >
+            Track Quote
+          </Link>
+
+          {/* Get Quote */}
           <Link
             href="/quote"
             className="rounded-md bg-signal-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-signal-600"
@@ -72,7 +84,11 @@ export default function Navbar() {
           aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {open ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
       </nav>
 
@@ -81,10 +97,13 @@ export default function Navbar() {
         id="mobile-menu"
         className={cn(
           "overflow-hidden border-t border-navy-800 bg-navy-900 transition-[max-height] duration-300 md:hidden",
-          open ? "max-h-96" : "max-h-0 border-t-0"
+          open
+            ? "max-h-[500px]"
+            : "max-h-0 border-t-0"
         )}
       >
         <ul className="flex flex-col gap-1 px-4 py-3">
+          {/* Navigation links */}
           {primaryNavLinks.map((link) => (
             <li key={link.href}>
               <Link
@@ -92,13 +111,31 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "block rounded-md px-3 py-2.5 text-base font-medium text-steel-300 hover:bg-navy-800 hover:text-white",
-                  pathname === link.href && "bg-navy-800 text-white"
+                  pathname === link.href &&
+                    "bg-navy-800 text-white"
                 )}
               >
                 {link.label}
               </Link>
             </li>
           ))}
+
+          {/* Mobile Track Quote */}
+          <li>
+            <Link
+              href="/track-quote"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "block rounded-md px-3 py-2.5 text-base font-medium text-steel-300 hover:bg-navy-800 hover:text-white",
+                pathname === "/track-quote" &&
+                  "bg-navy-800 text-white"
+              )}
+            >
+              Track Quote
+            </Link>
+          </li>
+
+          {/* Mobile CTAs */}
           <li className="mt-2 flex gap-2 px-3">
             <Link
               href="/quote"
@@ -107,6 +144,7 @@ export default function Navbar() {
             >
               Get Quote
             </Link>
+
             <a
               href={buildTelLink(siteConfig.phone)}
               className="flex-1 rounded-md border border-steel-500 px-4 py-2.5 text-center text-sm font-semibold text-white"
