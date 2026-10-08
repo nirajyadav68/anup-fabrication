@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import ProductionUpdateForm from "./ProductionUpdateForm";
+import ProductionMaterialUsage from "./ProductionMaterialUsage";
 
 function formatStatus(status: string) {
   return status
-    .replace(/\_/g, " ")
+    .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
@@ -93,10 +94,8 @@ export default async function ProductionJobDetailPage({
       job_number,
       order_id,
       customer_id,
-
       worker_id,
       assigned_worker,
-
       priority,
       status,
       progress,
@@ -156,7 +155,6 @@ export default async function ProductionJobDetailPage({
   return (
     <main className="min-h-screen bg-steel-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-
         {/* HEADER */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -231,7 +229,6 @@ export default async function ProductionJobDetailPage({
 
         {/* CUSTOMER + ORDER */}
         <section className="grid gap-6 lg:grid-cols-2">
-
           {/* CUSTOMER */}
           <div className="rounded-2xl border border-steel-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
@@ -384,7 +381,9 @@ export default async function ProductionJobDetailPage({
 
                   <p className="mt-1 font-semibold text-steel-900">
                     ₹
-                    {Number(order.total ?? 0).toLocaleString("en-IN")}
+                    {Number(
+                      order.total ?? 0
+                    ).toLocaleString("en-IN")}
                   </p>
                 </div>
               </div>
@@ -403,7 +402,6 @@ export default async function ProductionJobDetailPage({
           </h2>
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
             {/* WORKER */}
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-steel-400">
@@ -504,6 +502,11 @@ export default async function ProductionJobDetailPage({
           </div>
         </section>
 
+        {/* MATERIAL USAGE */}
+        <ProductionMaterialUsage
+          productionJobId={job.id}
+        />
+
         {/* TIMELINE */}
         <section className="rounded-2xl border border-steel-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold text-steel-900">
@@ -511,7 +514,6 @@ export default async function ProductionJobDetailPage({
           </h2>
 
           <div className="mt-5 space-y-4">
-
             {/* CREATED */}
             <div className="flex gap-3">
               <div className="mt-1 h-3 w-3 shrink-0 rounded-full bg-signal-500" />
