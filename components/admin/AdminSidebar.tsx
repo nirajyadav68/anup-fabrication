@@ -77,6 +77,16 @@ const links = [
     icon: Settings,
   },
 
+  // ============================================
+  // INVENTORY MANAGEMENT
+  // ============================================
+
+  {
+    href: "/admin/inventory",
+    label: "Inventory",
+    icon: Package,
+  },
+
   {
     href: "/admin/messages",
     label: "Contact Messages",
