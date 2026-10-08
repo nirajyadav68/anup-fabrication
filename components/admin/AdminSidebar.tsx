@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import {
   LayoutDashboard,
   Package,
@@ -20,6 +21,7 @@ import {
   Menu,
   X,
   LogOut,
+  HardHat,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -32,66 +34,99 @@ const links = [
     label: "Dashboard",
     icon: LayoutDashboard,
   },
+
   {
     href: "/admin/products",
     label: "Products",
     icon: Package,
   },
+
   {
     href: "/admin/services",
     label: "Services",
     icon: Wrench,
   },
+
   {
     href: "/admin/projects",
     label: "Projects",
     icon: FolderKanban,
   },
+
   {
     href: "/admin/gallery",
     label: "Gallery",
     icon: Images,
   },
+
   {
     href: "/admin/quotes",
     label: "Quote Requests",
     icon: FileText,
   },
+
   {
     href: "/admin/notifications",
     label: "Notifications",
     icon: Bell,
   },
+
   {
     href: "/admin/rates",
     label: "Material Rates",
     icon: Settings,
   },
+
   {
     href: "/admin/messages",
     label: "Contact Messages",
     icon: MessageSquare,
   },
+
   {
     href: "/admin/reviews",
     label: "Reviews",
     icon: Star,
   },
+
   {
     href: "/admin/orders",
     label: "Orders",
     icon: ShoppingCart,
   },
+
   {
     href: "/admin/customers",
     label: "Customers",
     icon: Users,
   },
+
+  // ============================================
+  // WORKER MANAGEMENT
+  // ============================================
+
+  {
+    href: "/admin/workers",
+    label: "Workers",
+    icon: HardHat,
+  },
+
+  // ============================================
+  // PRODUCTION MANAGEMENT
+  // ============================================
+
+  {
+    href: "/admin/production",
+    label: "Production",
+    icon: Wrench,
+  },
+
   {
     href: "/admin/settings",
     label: "Website Settings",
     icon: Settings,
   },
+
   {
     href: "/admin/profile",
     label: "Admin Profile",
@@ -101,6 +136,7 @@ const links = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+
   const [open, setOpen] = useState(false);
 
   const NavLinks = (
@@ -118,10 +154,13 @@ export default function AdminSidebar() {
             <Link
               href={link.href}
               onClick={() => setOpen(false)}
-              aria-current={isActive ? "page" : undefined}
+              aria-current={
+                isActive ? "page" : undefined
+              }
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-steel-300 transition-colors hover:bg-navy-800 hover:text-white",
-                isActive && "bg-navy-800 text-white"
+                isActive &&
+                  "bg-navy-800 text-white"
               )}
             >
               <Icon
@@ -142,6 +181,7 @@ export default function AdminSidebar() {
       {/* =================================
           MOBILE TOP BAR
       ================================= */}
+
       <div className="flex items-center justify-between border-b border-navy-800 bg-navy-900 px-4 py-3 md:hidden">
         <p className="font-display text-lg font-bold text-white">
           ANUP{" "}
@@ -155,10 +195,14 @@ export default function AdminSidebar() {
 
           <button
             type="button"
-            onClick={() => setOpen((value) => !value)}
+            onClick={() =>
+              setOpen((value) => !value)
+            }
             aria-expanded={open}
             aria-label={
-              open ? "Close menu" : "Open menu"
+              open
+                ? "Close menu"
+                : "Open menu"
             }
             className="rounded-md p-1 text-white hover:bg-navy-800"
           >
@@ -174,6 +218,7 @@ export default function AdminSidebar() {
       {/* =================================
           MOBILE NAVIGATION
       ================================= */}
+
       {open && (
         <nav
           aria-label="Admin navigation"
@@ -203,9 +248,13 @@ export default function AdminSidebar() {
       {/* =================================
           DESKTOP SIDEBAR
       ================================= */}
+
       <aside className="hidden w-64 shrink-0 border-r border-navy-800 bg-navy-900 md:flex md:flex-col md:justify-between md:p-4">
         <div>
-          {/* Logo + Notification */}
+          {/* =================================
+              LOGO + NOTIFICATION
+          ================================= */}
+
           <div className="flex items-center justify-between px-2">
             <p className="font-display text-lg font-bold text-white">
               ANUP{" "}
@@ -217,7 +266,10 @@ export default function AdminSidebar() {
             <NotificationBell />
           </div>
 
-          {/* Navigation */}
+          {/* =================================
+              NAVIGATION
+          ================================= */}
+
           <nav
             aria-label="Admin navigation"
             className="mt-6"
@@ -226,7 +278,10 @@ export default function AdminSidebar() {
           </nav>
         </div>
 
-        {/* Sign Out */}
+        {/* =================================
+            SIGN OUT
+        ================================= */}
+
         <form action={signOut}>
           <button
             type="submit"

@@ -1,21 +1,39 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, ImageIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  ImageIcon,
+  Download,
+  MessageCircle,
+} from "lucide-react";
+
 import { createClient } from "@/lib/supabase/server";
 import { mediaUrl } from "@/lib/supabase/storage";
+
 import StatusBadge from "@/components/admin/StatusBadge";
 import QuoteStatusForm from "@/components/admin/QuoteStatusForm";
 import DeleteButton from "@/components/admin/DeleteButton";
-import { updateQuoteStatus, deleteQuote } from "../actions";
+import QuotePDF from "@/components/admin/QuotePDF";
+
+import {
+  updateQuoteStatus,
+  deleteQuote,
+} from "../actions";
 
 export const metadata: Metadata = {
   title: "Quote Detail",
-  robots: { index: false, follow: false },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 interface Props {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 }
 
 function Field({
@@ -25,13 +43,20 @@ function Field({
   label: string;
   value: React.ReactNode;
 }) {
-  if (value === null || value === undefined || value === "") return null;
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
 
   return (
     <div>
       <dt className="text-xs uppercase tracking-wide text-steel-500">
         {label}
       </dt>
+
       <dd className="mt-0.5 text-sm font-medium text-navy-900">
         {value}
       </dd>
@@ -39,10 +64,28 @@ function Field({
   );
 }
 
-export default async function AdminQuoteDetailPage({ params }: Props) {
+function formatCurrency(
+  value: number | null | undefined
+) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return null;
+  }
+
+  return `₹${Number(value).toLocaleString("en-IN")}`;
+}
+
+export default async function AdminQuoteDetailPage({
+  params,
+}: Props) {
   const supabase = createClient();
 
-  const { data: quote } = await supabase
+  const {
+    data: quote,
+    error,
+  } = await supabase
     .from("quotes")
     .select(`
       id,
@@ -77,30 +120,87 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
     .eq("id", params.id)
     .single();
 
-  if (!quote) notFound();
+  if (error || !quote) {
+    notFound();
+  }
 
-  const boundUpdate = updateQuoteStatus.bind(null, quote.id);
-
-  const drawings = (quote.quote_files ?? []).filter(
-    (f: any) => f.file_type === "drawing"
+  const boundUpdate = updateQuoteStatus.bind(
+    null,
+    quote.id
   );
 
-  const referenceImages = (quote.quote_files ?? []).filter(
-    (f: any) => f.file_type === "reference_image"
+  const drawings = (
+    quote.quote_files ?? []
+  ).filter(
+    (file: any) =>
+      file.file_type === "drawing"
   );
+
+  const referenceImages = (
+    quote.quote_files ?? []
+  ).filter(
+    (file: any) =>
+      file.file_type ===
+      "reference_image"
+  );
+
+  // ======================================================
+  // WHATSAPP
+  // ======================================================
+
+  const whatsappNumber =
+    quote.whatsapp || quote.phone;
+
+  const whatsappMessage = encodeURIComponent(
+    `Hello ${quote.customer_name},
+
+Your quotation ${quote.quote_number} from ANUP FABRICATION WORKS is ready.
+
+Quotation Amount: ${
+      quote.estimated_price
+        ? `₹${Number(
+            quote.estimated_price
+          ).toLocaleString("en-IN")}`
+        : "As discussed"
+    }
+
+Please review the quotation and let us know if you would like to proceed.
+
+Thank you,
+ANUP FABRICATION WORKS`
+  );
+
+  const cleanWhatsappNumber =
+    whatsappNumber
+      ? String(whatsappNumber).replace(
+          /\D/g,
+          ""
+        )
+      : "";
+
+  const whatsappUrl =
+    cleanWhatsappNumber
+      ? `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}`
+      : null;
 
   return (
     <div>
-      {/* Back */}
+      {/* ==================================================
+          BACK
+      ================================================== */}
+
       <Link
         href="/admin/quotes"
-        className="inline-flex items-center gap-1.5 text-sm text-steel-500 hover:text-navy-900"
+        className="inline-flex items-center gap-1.5 text-sm text-steel-500 transition hover:text-navy-900"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Quotes
       </Link>
 
-      {/* Header */}
+      {/* ==================================================
+          HEADER
+      ================================================== */}
+
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-mono text-2xl font-bold text-navy-900">
@@ -109,14 +209,120 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
 
           <p className="mt-1 text-sm text-steel-500">
             Submitted{" "}
-            {new Date(quote.created_at).toLocaleString("en-IN")}
+            {new Date(
+              quote.created_at
+            ).toLocaleString("en-IN")}
           </p>
         </div>
 
-        <StatusBadge status={quote.status} />
+        <div className="flex flex-wrap items-center gap-2">
+
+          {/* PDF DOWNLOAD */}
+
+          <QuotePDF
+            quote={{
+              quoteNumber:
+                quote.quote_number,
+
+              createdAt:
+                quote.created_at,
+
+              customerName:
+                quote.customer_name,
+
+              phone:
+                quote.phone,
+
+              email:
+                quote.email,
+
+              city:
+                quote.city,
+
+              address:
+                quote.address,
+
+              productOrProject:
+                quote.product_or_project,
+
+              serviceType:
+                quote.service_type,
+
+              material:
+                quote.material,
+
+              approximateSize:
+                quote.approximate_size,
+
+              quantity:
+                quote.quantity,
+
+              estimatedPrice:
+                quote.estimated_price,
+
+              budget:
+                quote.budget,
+
+              description:
+                quote.description,
+            }}
+          />
+
+          {/* WHATSAPP */}
+
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp Customer
+            </a>
+          )}
+
+          {/* STATUS */}
+
+          <StatusBadge
+            status={quote.status}
+          />
+        </div>
       </div>
 
-      {/* Status Workflow */}
+      {/* ==================================================
+          ACTION INFO
+      ================================================== */}
+
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+        {/* PDF INFO */}
+
+        <div className="flex items-center gap-2 rounded-lg border border-signal-100 bg-signal-50 px-4 py-3">
+          <Download className="h-4 w-4 shrink-0 text-signal-600" />
+
+          <p className="text-sm text-signal-700">
+            Download a professional quotation
+            PDF using the quote information.
+          </p>
+        </div>
+
+        {/* WHATSAPP INFO */}
+
+        <div className="flex items-center gap-2 rounded-lg border border-green-100 bg-green-50 px-4 py-3">
+          <MessageCircle className="h-4 w-4 shrink-0 text-green-600" />
+
+          <p className="text-sm text-green-700">
+            Open WhatsApp with a pre-filled
+            quotation message.
+          </p>
+        </div>
+      </div>
+
+      {/* ==================================================
+          STATUS WORKFLOW
+      ================================================== */}
+
       <div className="mt-6 rounded-lg border border-steel-100 bg-white p-6">
         <h2 className="mb-4 font-display text-base font-semibold text-navy-900">
           Quote Status
@@ -128,13 +334,17 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
         />
       </div>
 
-      {/* Customer / Quote Details */}
+      {/* ==================================================
+          CUSTOMER / QUOTE DETAILS
+      ================================================== */}
+
       <div className="mt-6 rounded-lg border border-steel-100 bg-white p-6">
         <h2 className="font-display text-base font-semibold text-navy-900">
           Quote Information
         </h2>
 
         <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+
           <Field
             label="Customer Name"
             value={quote.customer_name}
@@ -172,7 +382,9 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
 
           <Field
             label="Product / Project"
-            value={quote.product_or_project}
+            value={
+              quote.product_or_project
+            }
           />
 
           <Field
@@ -182,7 +394,9 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
 
           <Field
             label="Approximate Size"
-            value={quote.approximate_size}
+            value={
+              quote.approximate_size
+            }
           />
 
           <Field
@@ -192,23 +406,27 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
 
           <Field
             label="Budget"
-            value={
+            value={formatCurrency(
               quote.budget
-                ? `₹${Number(quote.budget).toLocaleString("en-IN")}`
-                : null
-            }
+            )}
           />
 
           <Field
             label="Required Date"
-            value={quote.required_date}
+            value={
+              quote.required_date
+            }
           />
         </dl>
       </div>
 
-      {/* Smart Price Estimate */}
+      {/* ==================================================
+          SMART PRICE ESTIMATE
+      ================================================== */}
+
       <div className="mt-6 rounded-xl border border-signal-200 bg-signal-50 p-6">
         <div className="flex items-center justify-between gap-3">
+
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-signal-600">
               Smart Calculator
@@ -225,14 +443,25 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
         </div>
 
         <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
           <Field
             label="Width"
-            value={quote.width ? `${quote.width}` : null}
+            value={
+              quote.width !== null &&
+              quote.width !== undefined
+                ? `${quote.width}`
+                : null
+            }
           />
 
           <Field
             label="Height"
-            value={quote.height ? `${quote.height}` : null}
+            value={
+              quote.height !== null &&
+              quote.height !== undefined
+                ? `${quote.height}`
+                : null
+            }
           />
 
           <Field
@@ -242,72 +471,102 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
 
           <Field
             label="Estimated Price"
-            value={
+            value={formatCurrency(
               quote.estimated_price
-                ? `₹${Number(
-                    quote.estimated_price
-                  ).toLocaleString("en-IN")}`
-                : null
-            }
+            )}
           />
         </dl>
 
         {!quote.estimated_price && (
           <p className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-            No smart price estimate was generated for this quote.
+            No smart price estimate was
+            generated for this quote.
           </p>
         )}
       </div>
 
-      {/* Description */}
+      {/* ==================================================
+          DESCRIPTION
+      ================================================== */}
+
       <div className="mt-6 rounded-lg border border-steel-100 bg-white p-6">
         <h2 className="font-display text-base font-semibold text-navy-900">
           Description
         </h2>
 
         <p className="mt-2 whitespace-pre-wrap text-sm text-steel-700">
-          {quote.description || "No description provided."}
+          {quote.description ||
+            "No description provided."}
         </p>
       </div>
 
-      {/* Attachments */}
-      {(drawings.length > 0 || referenceImages.length > 0) && (
+      {/* ==================================================
+          ATTACHMENTS
+      ================================================== */}
+
+      {(drawings.length > 0 ||
+        referenceImages.length > 0) && (
         <div className="mt-6 rounded-lg border border-steel-100 bg-white p-6">
+
           <h2 className="font-display text-base font-semibold text-navy-900">
             Attachments
           </h2>
 
           <div className="mt-3 flex flex-wrap gap-3">
-            {drawings.map((f: any) => (
-              <a
-                key={f.id}
-                href={mediaUrl(f.storage_path)!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-steel-200 px-3 py-2 text-sm text-steel-700 hover:border-signal-500 hover:text-signal-600"
-              >
-                <FileText className="h-4 w-4" />
-                Drawing
-              </a>
-            ))}
 
-            {referenceImages.map((f: any) => (
-              <a
-                key={f.id}
-                href={mediaUrl(f.storage_path)!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-steel-200 px-3 py-2 text-sm text-steel-700 hover:border-signal-500 hover:text-signal-600"
-              >
-                <ImageIcon className="h-4 w-4" />
-                Reference Image
-              </a>
-            ))}
+            {/* DRAWINGS */}
+
+            {drawings.map(
+              (file: any) => (
+                <a
+                  key={file.id}
+                  href={
+                    mediaUrl(
+                      file.storage_path
+                    )!
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-md border border-steel-200 px-3 py-2 text-sm text-steel-700 transition hover:border-signal-500 hover:text-signal-600"
+                >
+                  <FileText className="h-4 w-4" />
+
+                  {file.original_filename ||
+                    "Drawing"}
+                </a>
+              )
+            )}
+
+            {/* REFERENCE IMAGES */}
+
+            {referenceImages.map(
+              (file: any) => (
+                <a
+                  key={file.id}
+                  href={
+                    mediaUrl(
+                      file.storage_path
+                    )!
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-md border border-steel-200 px-3 py-2 text-sm text-steel-700 transition hover:border-signal-500 hover:text-signal-600"
+                >
+                  <ImageIcon className="h-4 w-4" />
+
+                  {file.original_filename ||
+                    "Reference Image"}
+                </a>
+              )
+            )}
           </div>
         </div>
       )}
 
-      {/* Delete */}
+      {/* ==================================================
+          DELETE
+      ================================================== */}
+
       <div className="mt-6">
         <DeleteButton
           action={deleteQuote}
