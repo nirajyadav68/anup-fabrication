@@ -465,12 +465,21 @@ export default function QuoteForm({
 
     
       if (quoteError || !quote) {
+
         console.error("Quote submission error:", quoteError);
+
+        console.error("Quote submission details:", {
+          code: quoteError?.code,
+          message: quoteError?.message,
+          details: quoteError?.details,
+          hint: quoteError?.hint,
+        });
         setSubmitState("error");
+
         setSubmitError(
-         quoteError?.message ||
-         "Quote could not be saved. Please try again."
-       );
+          quoteError?.message ||
+          "Quote could not be saved. Please try again."
+        );
 
         
 
